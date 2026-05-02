@@ -15,6 +15,26 @@ This project strictly adheres to the requested architecture and tech stack requi
 - ✅ **Storage:** AWS S3 Bucket (Secure file streaming with 1-hour Presigned URLs)
 - ✅ **AI Matching Engine:** Groq API `llama-3.3-70b-versatile` (Instant algorithmic semantic matching)
 
+🚀 Deployment & Infrastructure
+
+✅ Frontend – Vercel (HTTPS Enabled)
+→ Deployed on Vercel to leverage automatic HTTPS, CDN distribution, and seamless CI/CD integration for fast and secure delivery
+
+✅ Backend – AWS EC2 (Node.js Server)
+→ Hosted on EC2 to maintain full control over server environment, dependencies, and backend configurations
+
+⚠️ Challenge: Mixed Content (HTTPS vs HTTP)
+→ The frontend was served over HTTPS while the backend was running on HTTP, causing browsers to block API requests due to security policies
+
+✅ Solution – Cloudflare Tunnel
+→ Implemented Cloudflare Tunnel to expose the EC2 backend over HTTPS without manual SSL setup, resolving the mixed content issue securely
+
+✅ Process Management – PM2
+→ Used PM2 to keep the Node.js server running continuously, handle crashes, and enable automatic restarts for high availability
+
+✅ Reverse Proxy – Nginx
+→ Configured Nginx to route incoming requests efficiently to the Node.js backend and manage traffic handling cleanly
+
 ## 🏗 System Data Flow
 1. **User Action:** Job seeker uploads a PDF resume.
 2. **Secure Upload:** Express intercepts the file and streams it directly to an AWS S3 Bucket.
