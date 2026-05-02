@@ -25,26 +25,6 @@ This project strictly adheres to the requested architecture and tech stack requi
 
 ---
 
-## 🚀 Deployment Guide
-
-### 1. Frontend (Vercel)
-The frontend is designed to be easily deployed to Vercel directly from this monorepo.
-1. Connect this repository to Vercel.
-2. Under "Root Directory", type `syncup-frontend`.
-3. Add your environment variables (like your Backend API URL).
-4. Click Deploy!
-
-### 2. Backend (AWS EC2)
-The backend is designed for deployment on an AWS EC2 instance (Ubuntu).
-1. SSH into your EC2 instance and clone this repository.
-2. Navigate to the backend: `cd syncup-ai-job-platform/syncup-backend`
-3. Install dependencies: `npm install`
-4. Create your `.env` file containing your PostgreSQL URI, Redis URI, Groq API Key, and AWS S3 Credentials.
-5. Build the TypeScript code: `npm run build`
-6. Start the production server using PM2: `pm2 start dist/index.js --name "syncup-api"`
-
----
-
 ## 🧪 Comprehensive Testing Guide
 
 ### 1. Registration & Authentication
