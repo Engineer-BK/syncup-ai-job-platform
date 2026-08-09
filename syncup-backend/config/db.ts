@@ -1,21 +1,31 @@
 import pkg from "pg";
 const { Pool } = pkg;
-import crypto from "crypto";
 
+/**
+ * POSTGRESQL CONNECTION POOL SETUP
+ * 
+ * WHY USE A CONNECTION POOL?
+ * Opening a new database connection for every single HTTP request is slow and memory intensive.
+ * A `Pool` maintains a reusable collection of open database connections ready to handle queries instantly!
+ */
 export const pool = new Pool({
   connectionString: process.env.POSTGRESQL_URI,
 });
 
-// Prevent unhandled errors on idle clients from crashing the server
+// Prevent idle connection errors from abruptly crashing the backend server process
 pool.on("error", (err) => {
-  console.error("Unexpected error on idle client", err);
+  console.error("Unexpected error on idle PostgreSQL client connection:", err);
 });
 
+/**
+ * DATABASE INITIALIZATION
+ * Automatically creates all relational database tables if they do not exist yet.
+ */
 export const initDB = async () => {
   try {
     const client = await pool.connect();
     
-    // Create Users Table
+    // 1. Create USERS Table
     await client.query(`
       CREATE TABLE IF NOT EXISTS users (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -27,7 +37,7 @@ export const initDB = async () => {
       );
     `);
 
-    // Create Jobs Table
+    // 2. Create JOBS Table (linked to User creator via foreign key)
     await client.query(`
       CREATE TABLE IF NOT EXISTS jobs (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -40,7 +50,7 @@ export const initDB = async () => {
       );
     `);
 
-    // Create Applications Table
+    // 3. Create APPLICATIONS Table (linking User candidate and Job listing)
     await client.query(`
       CREATE TABLE IF NOT EXISTS applications (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -51,14 +61,14 @@ export const initDB = async () => {
         skill_summary TEXT,
         status VARCHAR(50) DEFAULT 'Pending',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE(user_id, job_id)
+        UNIQUE(user_id, job_id) -- Prevents a user from applying to the same job twice!
       );
     `);
 
-    console.log("PostgreSQL Connected & Tables verified");
-    client.release();
+    console.log("✅ PostgreSQL Database connected & tables verified successfully!");
+    client.release(); // Release connection client back to pool
   } catch (err) {
-    console.error("Database connection/init error", err);
-    process.exit(1);
+    console.error("❌ Database initialization error:", err);
+    process.exit(1); // Exit process if database connection fails
   }
 };
